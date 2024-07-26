@@ -12,3 +12,7 @@ export enum Note {
     'A#/Bb' = 58.2705,
     B = 61.7354,
 }
+
+export type Dir = 'flat' | 'sharp'
+
+export type OscType = 'sine' | 'sawtooth'
