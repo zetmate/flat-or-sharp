@@ -13,12 +13,17 @@ export enum Note {
     B = 61.7354,
 }
 
-export type Dir = 'flat' | 'sharp'
+export type NoteWithOctave = {
+    note: Note
+    octave: number
+}
 
-export type OscType = 'sine' | 'sawtooth'
+export type FlatOrSharp = 'flat' | 'sharp'
+
+export type OscType = 'sine' | 'sawtooth' | 'square'
 
 export interface QuizQuestion {
     note: Note
     octave: number
-    dir: Dir
+    flatOrSharp: FlatOrSharp
 }

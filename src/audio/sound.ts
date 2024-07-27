@@ -1,5 +1,5 @@
-import { Dir, Note, OscType, QuizQuestion } from '../common/types.ts'
-import { noteToHz } from './utils.ts'
+import { FlatOrSharp, Note, OscType, QuizQuestion } from '../common/types.ts'
+import { getDetunedHzFromNote, noteToHz } from './utils.ts'
 import { allNotes, MAX_OCTAVE, MIN_OCTAVE } from '../common/constants.ts'
 
 export interface PlayOneNoteOptions {
@@ -10,8 +10,9 @@ export interface PlayOneNoteOptions {
 
 export interface PlayTwoNotesOptions {
     base: { note: Note; octave: number }
-    diff: number
-    dir: 'flat' | 'sharp'
+    cents: number
+    flatOrSharp: 'flat' | 'sharp'
+    timeShift?: number
 }
 
 interface ISound {
@@ -24,45 +25,54 @@ interface ISound {
 
 class Sound implements ISound {
     private baseOsc: OscType = 'sine'
-    private diffOsc: OscType = 'sawtooth'
+    private diffOsc: OscType = 'square'
     gain = 0.5
+    filterFreq = 2_000
 
     playOneNote(options: PlayOneNoteOptions) {
         const { ctx, closeContext } = this.prepareForPlay(1)
         this.play(
             ctx,
             {
-                time: ctx.currentTime,
+                startTime: ctx.currentTime,
+                length: 1,
                 oscType: options.oscType,
-                hz: noteToHz(options.note, options.octave),
+                hz: noteToHz(options),
             },
             closeContext
         )
     }
 
-    playTwoNotes({ base, diff, dir }: PlayTwoNotesOptions) {
+    playTwoNotes({
+        base,
+        cents,
+        flatOrSharp,
+        timeShift = 1,
+    }: PlayTwoNotesOptions) {
         const { ctx, closeContext } = this.prepareForPlay(2)
 
-        const time = ctx.currentTime
-        const hz = noteToHz(base.note, base.octave)
+        const startTime = ctx.currentTime
+        const baseHz = noteToHz(base)
+        const diffHz = getDetunedHzFromNote(base, cents, flatOrSharp)
 
         // play base
         this.play(
             ctx,
             {
-                time,
-                hz,
+                startTime,
+                length: 1 + timeShift,
+                hz: baseHz,
                 oscType: this.baseOsc,
             },
             closeContext
         )
 
         // play diff
-        const diffHz = dir === 'flat' ? hz - diff : hz + diff
         this.play(
             ctx,
             {
-                time,
+                startTime: startTime + timeShift,
+                length: 1,
                 hz: diffHz,
                 oscType: this.diffOsc,
             },
@@ -72,13 +82,13 @@ class Sound implements ISound {
 
     getRandomQuizQuestion(): QuizQuestion {
         return {
-            dir: this.getRandomDir(),
+            flatOrSharp: this.getRandomDir(),
             note: this.getRandomNote(),
             octave: this.getRandomOctave(),
         }
     }
 
-    private getRandomDir(): Dir {
+    private getRandomDir(): FlatOrSharp {
         const random = Math.round(Math.random())
         return random === 0 ? 'flat' : 'sharp'
     }
@@ -96,21 +106,40 @@ class Sound implements ISound {
 
     private play(
         ctx: AudioContext,
-        { time, hz, oscType }: { time: number; hz: number; oscType: OscType },
+        {
+            startTime,
+            length,
+            hz,
+            oscType,
+        }: { startTime: number; length: number; hz: number; oscType: OscType },
         onEnded: () => void
     ) {
         const osc = new OscillatorNode(ctx, {
             type: oscType,
             frequency: hz,
         })
+        this.connectToEffectsChainAndOutput(ctx, osc, startTime)
+
+        osc.start(startTime)
+        osc.stop(startTime + length)
+        osc.onended = onEnded
+    }
+
+    private connectToEffectsChainAndOutput(
+        ctx: AudioContext,
+        node: AudioNode,
+        time: number
+    ) {
+        const filter = new BiquadFilterNode(ctx)
+        filter.type = 'highshelf'
+        filter.frequency.setValueAtTime(this.filterFreq, time)
+        filter.gain.setValueAtTime(-6, time)
+        node.connect(filter)
+
         const gainNode = new GainNode(ctx)
         gainNode.gain.setValueAtTime(this.gain, time)
-        osc.connect(gainNode)
+        filter.connect(gainNode)
         gainNode.connect(ctx.destination)
-
-        osc.start(time)
-        osc.stop(time + 1)
-        osc.onended = onEnded
     }
 
     // TODO: this whole thing is kinda awful, rewrite to promise base for closing contexts

@@ -7,10 +7,14 @@ function App() {
         <Theme appearance="dark">
             <button
                 onClick={() => {
-                    sound.playOneNote({
-                        oscType: 'sawtooth',
-                        octave: 4,
-                        note: Note.C,
+                    sound.playTwoNotes({
+                        base: {
+                            octave: 5,
+                            note: Note.C,
+                        },
+                        cents: 50,
+                        flatOrSharp: 'flat',
+                        timeShift: 0.5,
                     })
                 }}
             >
