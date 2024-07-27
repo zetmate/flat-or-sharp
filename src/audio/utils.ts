@@ -58,17 +58,20 @@ export const centsToHz = (
     return lowerHz + hzDiff * ratio
 }
 
+const getSemitonesFromCents = (cents: number) => {
+    const semitones = Math.ceil(Math.abs(cents) / 100)
+    return cents % 100 === 0 ? semitones + 1 : semitones
+}
+
 /**
  * Returns hz that is a flat note from the base
  * @param base
  * @param cents - amount of cents
  */
 export const getFlatHzFromNote = (base: NoteWithOctave, cents: number) => {
-    const semitones = Math.ceil(Math.abs(cents) / 100)
-    const semitonesNormalized = cents % 100 === 0 ? semitones + 1 : semitones
-    const lowerNote = getIntervalNoteFrom(base, -semitonesNormalized)
+    const semitones = getSemitonesFromCents(cents)
+    const lowerNote = getIntervalNoteFrom(base, -semitones)
     const higherNote = getIntervalNoteFrom(lowerNote, 1)
-
     const centsToApply = 100 - (cents % 100)
 
     return centsToHz(lowerNote, higherNote, centsToApply)
@@ -80,11 +83,9 @@ export const getFlatHzFromNote = (base: NoteWithOctave, cents: number) => {
  * @param cents - amount of cents
  */
 export const getSharpHzFromNote = (base: NoteWithOctave, cents: number) => {
-    const semitones = Math.ceil(Math.abs(cents) / 100)
-    const semitonesNormalized = cents % 100 === 0 ? semitones + 1 : semitones
-    const higherNote = getIntervalNoteFrom(base, semitonesNormalized)
+    const semitones = getSemitonesFromCents(cents)
+    const higherNote = getIntervalNoteFrom(base, semitones)
     const lowerNote = getIntervalNoteFrom(higherNote, -1)
-
     const centsToApply = cents % 100
 
     return centsToHz(lowerNote, higherNote, centsToApply)

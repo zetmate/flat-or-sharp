@@ -15,41 +15,43 @@ export interface PlayTwoNotesOptions {
     timeShift?: number
 }
 
-interface ISound {
-    gain: number
-
-    playOneNote(options: PlayOneNoteOptions): void
-
-    playTwoNotes(options: PlayTwoNotesOptions): void
+interface PlayOptions {
+    startTime: number
+    length: number
+    hz: number
+    oscType: OscType
+    reverb?: ConvolverNode | null
 }
 
-class Sound implements ISound {
+class Sound {
+    gain = 0.5
+    reverbGain = 0.1
+    filterFreq = 2_000
     private baseOsc: OscType = 'sine'
     private diffOsc: OscType = 'square'
-    gain = 0.5
-    filterFreq = 2_000
 
-    playOneNote(options: PlayOneNoteOptions) {
-        const { ctx, closeContext } = this.prepareForPlay(1)
-        this.play(
+    async playOneNote(options: PlayOneNoteOptions) {
+        const { ctx, closeContext, reverb } = await this.prepareForPlay(1)
+        void this.play(
             ctx,
             {
                 startTime: ctx.currentTime,
                 length: 1,
                 oscType: options.oscType,
                 hz: noteToHz(options),
+                reverb,
             },
             closeContext
         )
     }
 
-    playTwoNotes({
+    async playTwoNotes({
         base,
         cents,
         flatOrSharp,
         timeShift = 1,
     }: PlayTwoNotesOptions) {
-        const { ctx, closeContext } = this.prepareForPlay(2)
+        const { ctx, closeContext, reverb } = await this.prepareForPlay(2)
 
         const startTime = ctx.currentTime
         const baseHz = noteToHz(base)
@@ -63,6 +65,7 @@ class Sound implements ISound {
                 length: 1 + timeShift,
                 hz: baseHz,
                 oscType: this.baseOsc,
+                reverb,
             },
             closeContext
         )
@@ -75,6 +78,7 @@ class Sound implements ISound {
                 length: 1,
                 hz: diffHz,
                 oscType: this.diffOsc,
+                reverb,
             },
             closeContext
         )
@@ -106,19 +110,14 @@ class Sound implements ISound {
 
     private play(
         ctx: AudioContext,
-        {
-            startTime,
-            length,
-            hz,
-            oscType,
-        }: { startTime: number; length: number; hz: number; oscType: OscType },
+        { startTime, length, hz, oscType, reverb }: PlayOptions,
         onEnded: () => void
     ) {
         const osc = new OscillatorNode(ctx, {
             type: oscType,
             frequency: hz,
         })
-        this.connectToEffectsChainAndOutput(ctx, osc, startTime)
+        this.connectToEffectsChainAndOutput(ctx, osc, startTime, reverb)
 
         osc.start(startTime)
         osc.stop(startTime + length)
@@ -128,34 +127,90 @@ class Sound implements ISound {
     private connectToEffectsChainAndOutput(
         ctx: AudioContext,
         node: AudioNode,
-        time: number
+        time: number,
+        reverb?: ConvolverNode | null
     ) {
+        // Filter
         const filter = new BiquadFilterNode(ctx)
         filter.type = 'highshelf'
         filter.frequency.setValueAtTime(this.filterFreq, time)
         filter.gain.setValueAtTime(-6, time)
+
+        // Connect 1
         node.connect(filter)
 
+        // Gain
         const gainNode = new GainNode(ctx)
         gainNode.gain.setValueAtTime(this.gain, time)
+
+        // Connect 2
         filter.connect(gainNode)
+
+        // OUTPUT DRY
         gainNode.connect(ctx.destination)
+
+        if (reverb) {
+            // Connect 3
+            gainNode.connect(reverb)
+
+            // Reverb gain
+            const reverbGainNode = new GainNode(ctx)
+            reverbGainNode.gain.setValueAtTime(this.reverbGain, time)
+
+            // Connect 4
+            reverb.connect(reverbGainNode)
+
+            // OUTPUT WET
+            reverbGainNode.connect(ctx.destination)
+        }
     }
 
     // TODO: this whole thing is kinda awful, rewrite to promise base for closing contexts
-    private prepareForPlay(soundSourcesCount: number) {
+    private async prepareForPlay(soundSourcesCount: number) {
         const ctx = new AudioContext()
+        const reverb = await this.createReverbNode(ctx)
         let counter = 1
+
+        const handleClosing = () => {
+            const reverbDuration = reverb?.buffer?.duration
+            if (reverbDuration) {
+                setTimeout(
+                    () => {
+                        void ctx.close()
+                    },
+                    reverbDuration * 1000 + 100
+                )
+            } else {
+                void ctx.close()
+            }
+        }
 
         // only close when both osc played
         const closeContext = () => {
             if (counter === soundSourcesCount) {
-                void ctx.close()
+                handleClosing()
             } else {
                 counter++
             }
         }
-        return { ctx, closeContext }
+        return { ctx, closeContext, reverb }
+    }
+
+    private async createReverbNode(ctx: AudioContext) {
+        try {
+            const impulseResponse = await fetch(
+                './src/audio/impulseResponses/mediumHall.wav'
+            )
+            const arrayBuffer = await impulseResponse.arrayBuffer()
+            const audioBuffer = await ctx.decodeAudioData(arrayBuffer)
+            const convolver = ctx.createConvolver()
+            convolver.buffer = audioBuffer
+
+            return convolver
+        } catch (err) {
+            console.error('[Sound]: failed to create reverb node', err)
+            return null
+        }
     }
 }
 
