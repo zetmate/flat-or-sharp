@@ -1,5 +1,6 @@
-import { Dir, Note, OscType } from '../common/types.ts'
+import { Dir, Note, OscType, QuizQuestion } from '../common/types.ts'
 import { noteToHz } from './utils.ts'
+import { allNotes, MAX_OCTAVE, MIN_OCTAVE } from '../common/constants.ts'
 
 export interface PlayOneNoteOptions {
     note: Note
@@ -7,14 +8,10 @@ export interface PlayOneNoteOptions {
     oscType: OscType
 }
 
-export interface DiffPlayInfo {
+export interface PlayTwoNotesOptions {
     base: { note: Note; octave: number }
     diff: number
     dir: 'flat' | 'sharp'
-}
-
-export interface PlayTwoNotesOptions extends Omit<DiffPlayInfo, 'dir'> {
-    dir?: DiffPlayInfo['dir']
 }
 
 interface ISound {
@@ -22,7 +19,7 @@ interface ISound {
 
     playOneNote(options: PlayOneNoteOptions): void
 
-    playTwoNotes(options: PlayTwoNotesOptions): DiffPlayInfo
+    playTwoNotes(options: PlayTwoNotesOptions): void
 }
 
 class Sound implements ISound {
@@ -43,10 +40,9 @@ class Sound implements ISound {
         )
     }
 
-    playTwoNotes(options: PlayTwoNotesOptions): DiffPlayInfo {
+    playTwoNotes({ base, diff, dir }: PlayTwoNotesOptions) {
         const { ctx, closeContext } = this.prepareForPlay(2)
 
-        const { dir = this.getRandomDir(), diff, base } = options
         const time = ctx.currentTime
         const hz = noteToHz(base.note, base.octave)
 
@@ -72,11 +68,30 @@ class Sound implements ISound {
             },
             closeContext
         )
+    }
 
+    getRandomQuizQuestion(): QuizQuestion {
         return {
-            ...options,
-            dir,
+            dir: this.getRandomDir(),
+            note: this.getRandomNote(),
+            octave: this.getRandomOctave(),
         }
+    }
+
+    private getRandomDir(): Dir {
+        const random = Math.round(Math.random())
+        return random === 0 ? 'flat' : 'sharp'
+    }
+
+    private getRandomNote() {
+        const randomIdx = Math.floor(Math.random() * 12)
+        return allNotes[randomIdx]
+    }
+
+    private getRandomOctave() {
+        return Math.floor(
+            Math.random() * (MAX_OCTAVE - MIN_OCTAVE + 1) + MIN_OCTAVE
+        )
     }
 
     private play(
@@ -96,11 +111,6 @@ class Sound implements ISound {
         osc.start(time)
         osc.stop(time + 1)
         osc.onended = onEnded
-    }
-
-    private getRandomDir(): Dir {
-        const random = Math.round(Math.random())
-        return random === 0 ? 'flat' : 'sharp'
     }
 
     // TODO: this whole thing is kinda awful, rewrite to promise base for closing contexts

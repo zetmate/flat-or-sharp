@@ -16,3 +16,9 @@ export enum Note {
 export type Dir = 'flat' | 'sharp'
 
 export type OscType = 'sine' | 'sawtooth'
+
+export interface QuizQuestion {
+    note: Note
+    octave: number
+    dir: Dir
+}
