@@ -30,7 +30,7 @@ class Sound {
     private readonly filterFreq = 2_000
     private readonly baseOsc: OscType = 'sine'
     private readonly diffOsc: OscType = 'square'
-    private fadeInLength = 0.1
+    private fadeInLength = 0.01
 
     async playOneNote(options: PlayOneNoteOptions) {
         const { ctx, closeContext, reverb } = await this.prepareForPlay(1)
@@ -141,6 +141,7 @@ class Sound {
 
         // Gain
         const gainNode = new GainNode(ctx)
+        gainNode.gain.setValueAtTime(0, time)
         gainNode.gain.linearRampToValueAtTime(
             this.gain,
             time + this.fadeInLength
