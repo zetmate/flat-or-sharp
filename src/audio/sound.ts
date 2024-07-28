@@ -30,7 +30,7 @@ class Sound {
     private readonly filterFreq = 2_000
     private readonly baseOsc: OscType = 'sine'
     private readonly diffOsc: OscType = 'square'
-    private fadeInLength = 0.05
+    private fadeInLength = 0.1
 
     async playTwoNotes({
         base,
@@ -40,7 +40,7 @@ class Sound {
     }: PlayTwoNotesOptions) {
         const { ctx, closeContext, playPromise } = await this.prepareForPlay(2)
 
-        const startTime = ctx.currentTime
+        const startTime = ctx.currentTime + 0.5
         const baseHz = noteToHz(base)
         const diffHz = getDetunedHzFromNote(base, cents, flatOrSharp)
 
