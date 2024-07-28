@@ -1,6 +1,6 @@
 import { Difficulty, Note, QuizValue } from './types.ts'
 
-export const MIN_OCTAVE = 2
+export const MIN_OCTAVE = 3
 export const MAX_OCTAVE = 5
 export const QUESTIONS_COUNT = 10
 
