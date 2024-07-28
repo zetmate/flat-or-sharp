@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { QuizContext } from '../../context/QuizContext.ts'
+import { QuizContext } from './context/QuizContext.ts'
 import { Wrapper } from './components/Wrapper.tsx'
 
 export const InProgressQuiz = React.memo(() => {

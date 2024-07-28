@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { QuizContext } from '../../context/QuizContext.ts'
+import { QuizContext } from './context/QuizContext.ts'
 import { InProgressQuiz } from './InProgressQuiz.tsx'
 import { CompletedQuiz } from './CompletedQuiz.tsx'
 import { NotStartedQuiz } from './NotStartedQuiz.tsx'

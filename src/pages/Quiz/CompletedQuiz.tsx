@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Button, Flex } from '@radix-ui/themes'
 import { Wrapper } from './components/Wrapper.tsx'
-import { QuizContext } from '../../context/QuizContext.ts'
+import { QuizContext } from './context/QuizContext.ts'
 
 export const CompletedQuiz = React.memo(() => {
     const { questionsCount, correctAnswers } = useContext(QuizContext)

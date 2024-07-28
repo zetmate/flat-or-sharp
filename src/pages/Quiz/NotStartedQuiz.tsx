@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { Button, Flex, Slider, Text } from '@radix-ui/themes'
-import { QuizContext } from '../../context/QuizContext.ts'
+import { QuizContext } from './context/QuizContext.ts'
 import { Wrapper } from './components/Wrapper.tsx'
 import { defaultDifficulty } from '../../common/constants.ts'
 

@@ -2,7 +2,7 @@ import { PropsWithChildren, useCallback, useMemo, useState } from 'react'
 import { ValueID } from '../types.ts'
 import { ValuesContext, ValuesContextType } from './ValuesContext.tsx'
 
-export const ValuesContextProvider = ({ children }: PropsWithChildren) => {
+export const ValuesProvider = ({ children }: PropsWithChildren) => {
     const [initializedValues, setInitializedValues] = useState<
         ValuesContextType['initializedValues']
     >(new Map())

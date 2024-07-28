@@ -4,9 +4,12 @@ import {
     FlatOrSharp,
     QuizQuestion,
     QuizState,
-} from '../common/types.ts'
-import { defaultDifficulty, QUESTIONS_COUNT } from '../common/constants.ts'
-import { sound } from '../audio/sound.ts'
+} from '../../../common/types.ts'
+import {
+    defaultDifficulty,
+    QUESTIONS_COUNT,
+} from '../../../common/constants.ts'
+import { sound } from '../../../audio/sound.ts'
 import { QuizContext, QuizContextValue } from './QuizContext.ts'
 
 export const QuizContextProvider = React.memo<PropsWithChildren>(

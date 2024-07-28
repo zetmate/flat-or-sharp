@@ -1,5 +1,5 @@
-import { quizDefaultValue } from '../common/constants.ts'
-import { Difficulty, FlatOrSharp, QuizValue } from '../common/types.ts'
+import { quizDefaultValue } from '../../../common/constants.ts'
+import { Difficulty, FlatOrSharp, QuizValue } from '../../../common/types.ts'
 import React from 'react'
 
 export interface QuizContextValue extends QuizValue {
