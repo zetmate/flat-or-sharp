@@ -32,28 +32,13 @@ class Sound {
     private readonly diffOsc: OscType = 'square'
     private fadeInLength = 0.05
 
-    async playOneNote(options: PlayOneNoteOptions) {
-        const { ctx, closeContext, reverb } = await this.prepareForPlay(1)
-        void this.play(
-            ctx,
-            {
-                startTime: ctx.currentTime,
-                length: 1,
-                oscType: options.oscType,
-                hz: noteToHz(options),
-                reverb,
-            },
-            closeContext
-        )
-    }
-
     async playTwoNotes({
         base,
         cents,
         flatOrSharp,
         timeShift = 1,
     }: PlayTwoNotesOptions) {
-        const { ctx, closeContext } = await this.prepareForPlay(2)
+        const { ctx, closeContext, playPromise } = await this.prepareForPlay(2)
 
         const startTime = ctx.currentTime
         const baseHz = noteToHz(base)
@@ -82,6 +67,8 @@ class Sound {
             },
             closeContext
         )
+
+        return playPromise
     }
 
     getRandomQuizQuestion(): QuizQuestion {
@@ -170,22 +157,30 @@ class Sound {
     }
 
     // TODO: this whole thing is kinda awful, rewrite to promise base for closing contexts
-    private async prepareForPlay(soundSourcesCount: number) {
+    private async prepareForPlay(
+        soundSourcesCount: number,
+        withReverb?: boolean
+    ) {
+        let resolvePlay = () => {}
+        const playPromise = new Promise<void>((resolve) => {
+            resolvePlay = resolve
+        })
+
         const ctx = new AudioContext()
         const reverb = await this.createReverbNode(ctx)
         let counter = 1
 
         const handleClosing = () => {
             const reverbDuration = reverb?.buffer?.duration
-            if (reverbDuration) {
+            if (reverbDuration && withReverb) {
                 setTimeout(
                     () => {
-                        void ctx.close()
+                        void ctx.close().finally(resolvePlay)
                     },
                     reverbDuration * 1000 + 100
                 )
             } else {
-                void ctx.close()
+                void ctx.close().finally(resolvePlay)
             }
         }
 
@@ -197,7 +192,7 @@ class Sound {
                 counter++
             }
         }
-        return { ctx, closeContext, reverb }
+        return { ctx, closeContext, reverb, playPromise }
     }
 
     private async createReverbNode(ctx: AudioContext) {

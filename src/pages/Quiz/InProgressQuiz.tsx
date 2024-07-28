@@ -1,12 +1,13 @@
-import React, { useCallback, useContext } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import { QuizContext } from './context/QuizContext.ts'
 import { Wrapper } from './components/Wrapper.tsx'
 import { Button, Flex, IconButton } from '@radix-ui/themes'
-import { PlayIcon } from '@radix-ui/react-icons'
+import { PlayIcon, SpeakerModerateIcon } from '@radix-ui/react-icons'
 import { sound } from '../../audio/sound.ts'
 import { FlatOrSharp } from '../../common/types.ts'
 
 export const InProgressQuiz = React.memo(() => {
+    const [isPlaying, setIsPlaying] = useState<boolean>(false)
     const {
         questionsCount,
         currentQuestion,
@@ -18,18 +19,21 @@ export const InProgressQuiz = React.memo(() => {
 
     const play = useCallback(
         async (overrideDirection?: 'flat' | 'sharp') => {
-            if (!currentQuestion) {
+            if (!currentQuestion || isPlaying) {
                 return
             }
+            setIsPlaying(true)
             const { note, octave, flatOrSharp } = currentQuestion
 
-            await sound.playTwoNotes({
-                base: { note, octave },
-                cents: difficulty.cents,
-                flatOrSharp: overrideDirection || flatOrSharp,
-            })
+            await sound
+                .playTwoNotes({
+                    base: { note, octave },
+                    cents: difficulty.cents,
+                    flatOrSharp: overrideDirection || flatOrSharp,
+                })
+                .finally(() => setIsPlaying(false))
         },
-        [currentQuestion, difficulty.cents]
+        [currentQuestion, difficulty.cents, isPlaying]
     )
 
     const onAnswerClick = useCallback(
@@ -76,9 +80,14 @@ export const InProgressQuiz = React.memo(() => {
                               : 'red'
                     }
                     variant="ghost"
+                    disabled={isPlaying}
                     onClick={() => void play()}
                 >
-                    <PlayIcon width="50" height="50" />
+                    {isPlaying ? (
+                        <SpeakerModerateIcon width="50" height="50" />
+                    ) : (
+                        <PlayIcon width="50" height="50" />
+                    )}
                 </IconButton>
             </Flex>
             <Flex justify="center" gap="6">
