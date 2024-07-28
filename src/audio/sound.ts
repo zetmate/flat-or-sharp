@@ -30,6 +30,7 @@ class Sound {
     private readonly filterFreq = 2_000
     private readonly baseOsc: OscType = 'sine'
     private readonly diffOsc: OscType = 'square'
+    private delayBeforePlayMs = 50
 
     async playOneNote(options: PlayOneNoteOptions) {
         const { ctx, closeContext, reverb } = await this.prepareForPlay(1)
@@ -109,13 +110,14 @@ class Sound {
 
     private play(
         ctx: AudioContext,
-        { startTime, length, hz, oscType, reverb }: PlayOptions,
+        { length, hz, oscType, reverb, ...options }: PlayOptions,
         onEnded: () => void
     ) {
         const osc = new OscillatorNode(ctx, {
             type: oscType,
             frequency: hz,
         })
+        const startTime = options.startTime + this.delayBeforePlayMs / 1000
         this.connectToEffectsChainAndOutput(ctx, osc, startTime, reverb)
 
         osc.start(startTime)
