@@ -1,6 +1,11 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react'
+import React, {
+    PropsWithChildren,
+    useContext,
+    useEffect,
+    useState,
+} from 'react'
 import { ValueID } from './types.ts'
-import { useValuesContext } from './context/ValuesContext.tsx'
+import { ValuesContext } from './context/ValuesContext.tsx'
 
 const UNSET_VALUE = '[WithValue]__unset' as const
 
@@ -16,13 +21,13 @@ export const WithValue = React.memo(function <T>({
     defaultValue,
     fallback = 'Loading...',
 }: WithValueProps<T>) {
-    const { initValue } = useValuesContext()
+    const { initValue } = useContext(ValuesContext)
     const [value, setValue] = useState<T | typeof UNSET_VALUE>(UNSET_VALUE)
 
     useEffect(() => {
         const savedValue = initValue(id)
         setValue((savedValue as T) || defaultValue)
-    }, [])
+    }, []) // onMount, dont add deps
 
     if (value === UNSET_VALUE) {
         return fallback
