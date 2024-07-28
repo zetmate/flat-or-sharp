@@ -30,7 +30,7 @@ class Sound {
     private readonly filterFreq = 2_000
     private readonly baseOsc: OscType = 'sine'
     private readonly diffOsc: OscType = 'square'
-    private fadeInLength = 0.01
+    private fadeInLength = 0.05
 
     async playOneNote(options: PlayOneNoteOptions) {
         const { ctx, closeContext, reverb } = await this.prepareForPlay(1)
