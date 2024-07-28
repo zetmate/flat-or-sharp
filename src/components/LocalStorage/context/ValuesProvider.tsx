@@ -7,8 +7,6 @@ export const ValuesProvider = ({ children }: PropsWithChildren) => {
         ValuesContextType['initializedValues']
     >(new Map())
 
-    console.log('initialized values', initializedValues)
-
     const initValue: ValuesContextType['initValue'] = useCallback(
         (valueId, defaultValue) => {
             if (initializedValues.has(valueId)) {

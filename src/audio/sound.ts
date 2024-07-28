@@ -52,7 +52,7 @@ class Sound {
         flatOrSharp,
         timeShift = 1,
     }: PlayTwoNotesOptions) {
-        const { ctx, closeContext, reverb } = await this.prepareForPlay(2)
+        const { ctx, closeContext } = await this.prepareForPlay(2)
 
         const startTime = ctx.currentTime
         const baseHz = noteToHz(base)
@@ -66,7 +66,6 @@ class Sound {
                 length: 1 + timeShift,
                 hz: baseHz,
                 oscType: this.baseOsc,
-                reverb,
             },
             closeContext
         )
@@ -79,7 +78,6 @@ class Sound {
                 length: 1,
                 hz: diffHz,
                 oscType: this.diffOsc,
-                reverb,
             },
             closeContext
         )
