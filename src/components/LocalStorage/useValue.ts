@@ -1,6 +1,6 @@
 import { ValueID } from './types.ts'
-import { useMemo } from 'react'
-import { useValuesContext } from './context/ValuesContext.tsx'
+import { useContext, useMemo } from 'react'
+import { ValuesContext } from './context/ValuesContext.tsx'
 
 interface UseValueReturnType<T> {
     value: T
@@ -8,7 +8,7 @@ interface UseValueReturnType<T> {
 }
 
 export function useValue<T>(id: ValueID): UseValueReturnType<T> {
-    const { updateValue, initializedValues } = useValuesContext()
+    const { updateValue, initializedValues } = useContext(ValuesContext)
 
     if (!initializedValues.has(id)) {
         throw new Error(
