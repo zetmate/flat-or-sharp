@@ -1,17 +1,14 @@
-import React from 'react'
-import { Button, Flex, Heading } from '@radix-ui/themes'
-import { useQuiz } from '../../context/QuizContext.tsx'
+import React, { useContext } from 'react'
+import { Button, Flex } from '@radix-ui/themes'
 import { Wrapper } from './components/Wrapper.tsx'
+import { QuizContext } from '../../context/QuizContext.ts'
 
 export const CompletedQuiz = React.memo(() => {
-    const { questionsCount, correctAnswers } = useQuiz()
+    const { questionsCount, correctAnswers } = useContext(QuizContext)
     const resultInPercentage = (correctAnswers / questionsCount) * 100
 
     return (
-        <Wrapper>
-            <Heading as="h2" size="7">
-                Your score is {resultInPercentage}%
-            </Heading>
+        <Wrapper title={`Your score is ${resultInPercentage}%`}>
             <Flex justify="between">
                 <Button variant="surface">Return</Button>
                 <Button variant="solid">Retry</Button>

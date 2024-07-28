@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Button, Flex, Slider, Text } from '@radix-ui/themes'
-import { useQuiz } from '../../context/QuizContext.tsx'
+import { QuizContext } from '../../context/QuizContext.ts'
 import { Wrapper } from './components/Wrapper.tsx'
 import { defaultDifficulty } from '../../common/constants.ts'
 
@@ -25,7 +25,7 @@ const getDifficultyLabel = (cents: number) => {
 
 export const NotStartedQuiz = React.memo(() => {
     const [cents, setCents] = useState<number>(defaultDifficulty.cents)
-    const { start } = useQuiz()
+    const { start } = useContext(QuizContext)
     const label = getDifficultyLabel(cents)
 
     return (

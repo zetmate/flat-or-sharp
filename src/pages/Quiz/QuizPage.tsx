@@ -1,4 +1,4 @@
-import { QuizContextProvider } from '../../context/QuizContext.tsx'
+import { QuizContextProvider } from '../../context/QuizContextProvider.tsx'
 import { QuizRouter } from './QuizRouter.tsx'
 
 export const QuizPage = () => {

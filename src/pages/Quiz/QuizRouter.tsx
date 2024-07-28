@@ -1,11 +1,11 @@
-import React from 'react'
-import { useQuiz } from '../../context/QuizContext.tsx'
+import React, { useContext } from 'react'
+import { QuizContext } from '../../context/QuizContext.ts'
 import { InProgressQuiz } from './InProgressQuiz.tsx'
 import { CompletedQuiz } from './CompletedQuiz.tsx'
 import { NotStartedQuiz } from './NotStartedQuiz.tsx'
 
 export const QuizRouter = React.memo(() => {
-    const { state } = useQuiz()
+    const { state } = useContext(QuizContext)
 
     switch (state) {
         case 'answer-pending':
