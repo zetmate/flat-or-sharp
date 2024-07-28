@@ -86,13 +86,13 @@ class Sound {
 
     getRandomQuizQuestion(): QuizQuestion {
         return {
-            flatOrSharp: this.getRandomDir(),
+            flatOrSharp: this.getRandomFlatSharp(),
             note: this.getRandomNote(),
             octave: this.getRandomOctave(),
         }
     }
 
-    private getRandomDir(): FlatOrSharp {
+    private getRandomFlatSharp(): FlatOrSharp {
         const random = Math.round(Math.random())
         return random === 0 ? 'flat' : 'sharp'
     }
