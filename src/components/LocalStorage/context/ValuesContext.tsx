@@ -3,7 +3,7 @@ import { ValueID } from '../types.ts'
 
 export interface ValuesContextType {
     initializedValues: Map<ValueID, unknown>
-    initValue: (id: ValueID) => unknown
+    initValue: (id: ValueID, defaultValue: unknown) => unknown
     updateValue: (id: ValueID, newValue: unknown) => void
 }
 

@@ -4,33 +4,32 @@ import React, {
     useEffect,
     useState,
 } from 'react'
-import { ValueID } from './types.ts'
 import { ValuesContext } from './context/ValuesContext.tsx'
-
-const UNSET_VALUE = '[WithValue]__unset' as const
+import { LSValue } from './LSValue.ts'
 
 export interface WithValueProps<T> extends PropsWithChildren {
     defaultValue: T
-    id: ValueID
+    lsValue: LSValue<T>
     fallback?: React.ReactNode
 }
 
-export const WithValue = React.memo(function <T>({
+export function WithValue<T>({
     children,
-    id,
+    lsValue,
     defaultValue,
     fallback = 'Loading...',
 }: WithValueProps<T>) {
+    const id = lsValue.id
     const { initValue } = useContext(ValuesContext)
-    const [value, setValue] = useState<T | typeof UNSET_VALUE>(UNSET_VALUE)
+    const [isInitialized, setIsInitialized] = useState(false)
 
     useEffect(() => {
-        const savedValue = initValue(id)
-        setValue((savedValue as T) || defaultValue)
+        initValue(id, defaultValue)
+        setIsInitialized(true)
     }, []) // onMount, dont add deps
 
-    if (value === UNSET_VALUE) {
+    if (!isInitialized) {
         return fallback
     }
     return children
-})
+}

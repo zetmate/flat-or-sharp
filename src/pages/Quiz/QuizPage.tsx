@@ -1,10 +1,15 @@
-import { QuizContextProvider } from './context/QuizContextProvider.tsx'
+import { QuizProvider } from './context/QuizProvider.tsx'
 import { QuizRouter } from './QuizRouter.tsx'
+import { WithValue } from '../../components/LocalStorage'
+import { lsValues } from '../../common/lsValues.ts'
+import { quizDefaultValue } from '../../common/constants.ts'
 
 export const QuizPage = () => {
     return (
-        <QuizContextProvider>
-            <QuizRouter />
-        </QuizContextProvider>
+        <WithValue lsValue={lsValues.quizData} defaultValue={quizDefaultValue}>
+            <QuizProvider>
+                <QuizRouter />
+            </QuizProvider>
+        </WithValue>
     )
 }

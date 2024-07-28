@@ -1,13 +1,14 @@
-import { ValueID } from './types.ts'
 import { useContext, useMemo } from 'react'
 import { ValuesContext } from './context/ValuesContext.tsx'
+import { LSValue } from './LSValue.ts'
 
 interface UseValueReturnType<T> {
     value: T
-    updateValue: (newValue: T) => void
+    updateValue: (newValue: Partial<T>) => void
 }
 
-export function useValue<T>(id: ValueID): UseValueReturnType<T> {
+export function useValue<T>(lsValue: LSValue<T>): UseValueReturnType<T> {
+    const id = lsValue.id
     const { updateValue, initializedValues } = useContext(ValuesContext)
 
     if (!initializedValues.has(id)) {
@@ -20,7 +21,13 @@ export function useValue<T>(id: ValueID): UseValueReturnType<T> {
 
     return useMemo(
         () => ({
-            updateValue: (newValue) => updateValue(id, newValue),
+            updateValue: (newValue) => {
+                if (typeof value === 'object') {
+                    updateValue(id, { ...value, ...newValue })
+                } else {
+                    updateValue(id, value)
+                }
+            },
             value: value as T,
         }),
         [id, value, updateValue]

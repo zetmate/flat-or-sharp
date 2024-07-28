@@ -7,13 +7,15 @@ export const ValuesProvider = ({ children }: PropsWithChildren) => {
         ValuesContextType['initializedValues']
     >(new Map())
 
+    console.log('initialized values', initializedValues)
+
     const initValue: ValuesContextType['initValue'] = useCallback(
-        (valueId) => {
+        (valueId, defaultValue) => {
             if (initializedValues.has(valueId)) {
                 return initializedValues.get(valueId)
             }
             const raw = localStorage.getItem(valueId)
-            const parsed = raw && JSON.parse(raw)
+            const parsed = (raw && JSON.parse(raw)) || defaultValue
 
             setInitializedValues((prevState) => {
                 const updated = new Map(prevState)

@@ -12,10 +12,14 @@ export interface QuizContextValue extends QuizValue {
     quit(): void
 }
 
+const emptyMethod = () => {
+    throw new Error('[QuizContext]: no provider found')
+}
+
 export const QuizContext = React.createContext<QuizContextValue>({
     ...quizDefaultValue,
-    answer: () => {},
-    next: () => {},
-    start: () => {},
-    quit: () => {},
+    answer: emptyMethod,
+    next: emptyMethod,
+    start: emptyMethod,
+    quit: emptyMethod,
 })

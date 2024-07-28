@@ -44,7 +44,6 @@ export const NotStartedQuiz = React.memo(() => {
                 <Button
                     variant="solid"
                     onClick={() => {
-                        console.log('click')
                         start({ cents, label })
                     }}
                 >
