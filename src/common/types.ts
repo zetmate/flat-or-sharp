@@ -39,3 +39,12 @@ export interface Difficulty {
     cents: number
     label: string
 }
+
+export interface QuizValue {
+    state: QuizState
+    difficulty: Difficulty
+    questionsCount: number
+    currentQuestionNum: number
+    currentQuestion: QuizQuestion | null
+    correctAnswers: number
+}

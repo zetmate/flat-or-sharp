@@ -1,21 +1,21 @@
-import React, { PropsWithChildren, useCallback, useMemo, useState } from 'react'
+import React, {
+    PropsWithChildren,
+    useCallback,
+    useContext,
+    useMemo,
+    useState,
+} from 'react'
 import {
     Difficulty,
     FlatOrSharp,
     QuizQuestion,
     QuizState,
+    QuizValue,
 } from '../common/types.ts'
 import { defaultDifficulty, QUESTIONS_COUNT } from '../common/constants.ts'
 import { sound } from '../audio/sound.ts'
 
-interface QuizContextValue {
-    state: QuizState
-    difficulty: Difficulty
-    questionsCount: number
-    currentQuestionNum: number
-    currentQuestion: QuizQuestion | null
-    correctAnswers: number
-
+interface QuizContextValue extends QuizValue {
     answer(flatOrSharp: FlatOrSharp): void
 
     next(): void
@@ -25,7 +25,21 @@ interface QuizContextValue {
     quit(): void
 }
 
-const QuizContext = React.createContext<QuizContextValue | null>(null)
+const QuizContext = React.createContext<QuizContextValue>({
+    state: 'not-started',
+    difficulty: defaultDifficulty,
+    questionsCount: QUESTIONS_COUNT,
+    currentQuestionNum: 0,
+    currentQuestion: null,
+    correctAnswers: 0,
+
+    answer: () => {},
+    next: () => {},
+    start: () => {},
+    quit: () => {},
+})
+
+export const useQuiz = () => useContext(QuizContext)
 
 export const QuizContextProvider = React.memo<PropsWithChildren>(
     ({ children }) => {
