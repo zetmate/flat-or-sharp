@@ -22,8 +22,20 @@ export type FlatOrSharp = 'flat' | 'sharp'
 
 export type OscType = 'sine' | 'sawtooth' | 'square'
 
+export type QuizState =
+    | 'not-started'
+    | 'answer-pending'
+    | 'completed'
+    | 'right'
+    | 'wrong'
+
 export interface QuizQuestion {
     note: Note
     octave: number
     flatOrSharp: FlatOrSharp
+}
+
+export interface Difficulty {
+    cents: number
+    label: string
 }

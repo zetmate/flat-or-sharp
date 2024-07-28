@@ -1,4 +1,15 @@
-import { Note } from './types.ts'
+import { Difficulty, Note } from './types.ts'
+
+export const MIN_OCTAVE = 2
+export const MAX_OCTAVE = 5
+export const QUESTIONS_COUNT = 10
+
+export const OCTAVE_SEMITONES = 12
+
+export const defaultDifficulty: Difficulty = {
+    cents: 50,
+    label: 'Normal',
+}
 
 export const allNotes = [
     Note.C,
@@ -14,11 +25,6 @@ export const allNotes = [
     Note['A#/Bb'],
     Note.B,
 ]
-
-export const MIN_OCTAVE = 2
-export const MAX_OCTAVE = 5
-
-export const OCTAVE_SEMITONES = 12
 
 export const NoteToIdx: Record<Note, number> = {
     [Note.C]: 0,

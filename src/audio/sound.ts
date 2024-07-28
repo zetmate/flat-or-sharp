@@ -23,12 +23,13 @@ interface PlayOptions {
     reverb?: ConvolverNode | null
 }
 
+// TODO: re-write to a set of functions
 class Sound {
-    gain = 0.5
-    reverbGain = 0.1
-    filterFreq = 2_000
-    private baseOsc: OscType = 'sine'
-    private diffOsc: OscType = 'square'
+    private readonly gain = 0.5
+    private readonly reverbGain = 0.1
+    private readonly filterFreq = 2_000
+    private readonly baseOsc: OscType = 'sine'
+    private readonly diffOsc: OscType = 'square'
 
     async playOneNote(options: PlayOneNoteOptions) {
         const { ctx, closeContext, reverb } = await this.prepareForPlay(1)
