@@ -1,15 +1,17 @@
 import React, { useContext, useState } from 'react'
-import { Button, Flex, Slider, Text } from '@radix-ui/themes'
+import { Button, Flex, Slider, Text, Switch } from '@radix-ui/themes'
 import { QuizContext } from './context/QuizContext.ts'
 import { Wrapper } from './components/Wrapper.tsx'
 import { defaultDifficulty } from '../../common/constants.ts'
 
-const MAX_CENTS = 700
-const MIN_CENTS = 10
+type Range = [number, number]
+const dummyRange: Range = [100, 700]
+const normalRange: Range = [10, 100]
+const defaultDummyCents = 400
 
 const getDifficultyLabel = (cents: number) => {
     if (cents > 100) {
-        return 'Very Easy'
+        return 'Dummy'
     }
     if (cents > 60) {
         return 'Easy'
@@ -23,20 +25,45 @@ const getDifficultyLabel = (cents: number) => {
     return 'God'
 }
 
+const getIntervalLabel = (cents: number) => {
+    if (cents < 100) {
+        return `${cents} cents`
+    }
+    return `${cents / 100} semitones`
+}
+
 export const NotStartedQuiz = React.memo(() => {
+    const [dummyModeOn, setDummyModeOn] = useState(false)
     const [cents, setCents] = useState<number>(defaultDifficulty.cents)
     const { start } = useContext(QuizContext)
     const label = getDifficultyLabel(cents)
 
+    const range = dummyModeOn ? dummyRange : normalRange
+
     return (
         <Wrapper title="Please select difficulty">
+            <Flex gap="2" justify="center" pb="4">
+                <Text size="2">Enable dummy mode</Text>
+                <Switch
+                    defaultChecked={false}
+                    onCheckedChange={(checked) => {
+                        if (checked) {
+                            setDummyModeOn(true)
+                            setCents(defaultDummyCents)
+                        } else {
+                            setDummyModeOn(false)
+                            setCents(defaultDifficulty.cents)
+                        }
+                    }}
+                />
+            </Flex>
             <Text size="4" align="center">
-                {label}: ({cents} cents)
+                {label}: ({getIntervalLabel(cents)})
             </Text>
             <Slider
-                step={10}
-                min={MIN_CENTS}
-                max={MAX_CENTS}
+                step={dummyModeOn ? 100 : 10}
+                min={range[0]}
+                max={range[1]}
                 value={[cents]}
                 onValueChange={(value) => setCents(value[0])}
             />
