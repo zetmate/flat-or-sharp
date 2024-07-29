@@ -47,20 +47,6 @@ export const InProgressQuiz = React.memo(() => {
         [currentQuestion, state]
     )
 
-    const getTitle = () => {
-        const baseTitle = `Question ${currentQuestionNum}/${questionsCount}`
-        if (state === 'answer-pending') {
-            return baseTitle
-        }
-        if (state === 'wrong') {
-            return `${baseTitle}: wrong answer`
-        }
-        if (state === 'right') {
-            return `${baseTitle}: correct answer`
-        }
-        return 'Error occurred'
-    }
-
     const getButtonColor = (flatOrSharp: FlatOrSharp) => {
         if (state === 'answer-pending') {
             return undefined
@@ -69,7 +55,7 @@ export const InProgressQuiz = React.memo(() => {
     }
 
     return (
-        <Wrapper title={getTitle()}>
+        <Wrapper title={`Question ${currentQuestionNum}/${questionsCount}`}>
             <Flex justify="center" pb="5">
                 <IconButton
                     color={
