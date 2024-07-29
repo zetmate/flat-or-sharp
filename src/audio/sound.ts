@@ -168,7 +168,7 @@ class Sound {
         emptySource.buffer = buffer
         emptySource.connect(ctx.destination)
         emptySource.start(0)
-        emptySource.stop(ctx.currentTime + 0.01)
+        emptySource.stop(ctx.currentTime + 0.5)
         emptySource.onended = resolveWarmup
 
         return warmupPromise
