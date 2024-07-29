@@ -34,8 +34,8 @@ class Sound {
     private playDelay = 0.25
     private closeDelay = 0.25
     private fadeOutLength = 0.025
-    private oscLength = 1.1
-    private timeShift = 1
+    private oscLength = 2
+    private timeShift = 0.25
 
     async playTwoNotes({ base, cents, flatOrSharp }: PlayTwoNotesOptions) {
         const { ctx, closeContext, playPromise } = await this.prepareForPlay(2)
