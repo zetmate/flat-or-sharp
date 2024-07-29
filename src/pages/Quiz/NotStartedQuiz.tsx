@@ -4,11 +4,11 @@ import { QuizContext } from './context/QuizContext.ts'
 import { Wrapper } from './components/Wrapper.tsx'
 import { defaultDifficulty } from '../../common/constants.ts'
 
-const MAX_CENTS = 100
+const MAX_CENTS = 700
 const MIN_CENTS = 10
 
 const getDifficultyLabel = (cents: number) => {
-    if (cents > 75) {
+    if (cents > 100) {
         return 'Very Easy'
     }
     if (cents > 60) {
