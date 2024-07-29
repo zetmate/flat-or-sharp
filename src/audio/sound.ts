@@ -33,13 +33,11 @@ class Sound {
     private fadeInLength = 0.1
     private playDelay = 0.25
     private closeDelay = 0.25
+    private fadeOutLength = 0.025
+    private oscLength = 1.1
+    private timeShift = 1
 
-    async playTwoNotes({
-        base,
-        cents,
-        flatOrSharp,
-        timeShift = 1,
-    }: PlayTwoNotesOptions) {
+    async playTwoNotes({ base, cents, flatOrSharp }: PlayTwoNotesOptions) {
         const { ctx, closeContext, playPromise } = await this.prepareForPlay(2)
 
         const startTime = ctx.currentTime + this.playDelay
@@ -51,7 +49,7 @@ class Sound {
             ctx,
             {
                 startTime,
-                length: 1 + timeShift,
+                length: this.oscLength + this.timeShift,
                 hz: baseHz,
                 oscType: this.baseOsc,
             },
@@ -62,8 +60,8 @@ class Sound {
         this.play(
             ctx,
             {
-                startTime: startTime + timeShift,
-                length: 1,
+                startTime: startTime + this.timeShift,
+                length: this.oscLength,
                 hz: diffHz,
                 oscType: this.diffOsc,
             },
@@ -106,7 +104,7 @@ class Sound {
             type: oscType,
             frequency: hz,
         })
-        this.connectToEffectsChainAndOutput(ctx, osc, startTime, reverb)
+        this.connectToEffectsChainAndOutput(ctx, osc, startTime, length, reverb)
 
         osc.start(startTime)
         osc.stop(startTime + length)
@@ -117,6 +115,7 @@ class Sound {
         ctx: AudioContext,
         node: AudioNode,
         time: number,
+        length: number,
         reverb?: ConvolverNode | null
     ) {
         // Filter
@@ -134,6 +133,10 @@ class Sound {
         gainNode.gain.linearRampToValueAtTime(
             this.gain,
             time + this.fadeInLength
+        )
+        gainNode.gain.linearRampToValueAtTime(
+            0,
+            time + length - this.fadeOutLength
         )
 
         // Connect 2
