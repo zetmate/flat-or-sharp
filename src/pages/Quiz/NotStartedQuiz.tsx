@@ -5,6 +5,7 @@ import { Wrapper } from './components/Wrapper.tsx'
 import { defaultDifficulty } from '../../common/constants.ts'
 import { useValue } from '../../components/LocalStorage'
 import { lsValues } from '../../common/lsValues.ts'
+import { getIntervalLabel } from './common.ts'
 
 type Range = [number, number]
 const dummyRange: Range = [100, 700]
@@ -25,13 +26,6 @@ const getDifficultyLabel = (cents: number) => {
         return 'Hard'
     }
     return 'God'
-}
-
-const getIntervalLabel = (cents: number) => {
-    if (cents < 100) {
-        return `${cents} cents`
-    }
-    return `${cents / 100} semitones`
 }
 
 export const NotStartedQuiz = React.memo(() => {

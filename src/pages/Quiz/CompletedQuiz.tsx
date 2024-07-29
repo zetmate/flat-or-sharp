@@ -1,15 +1,20 @@
 import React, { useContext } from 'react'
-import { Button, Flex } from '@radix-ui/themes'
+import { Button, Flex, Text } from '@radix-ui/themes'
 import { Wrapper } from './components/Wrapper.tsx'
 import { QuizContext } from './context/QuizContext.ts'
+import { getIntervalLabel } from './common.ts'
 
 export const CompletedQuiz = React.memo(() => {
-    const { questionsCount, correctAnswers, quit } = useContext(QuizContext)
+    const { questionsCount, correctAnswers, quit, difficulty } =
+        useContext(QuizContext)
     const resultInPercentage = (correctAnswers / questionsCount) * 100
 
     return (
         <Wrapper title={`Your score is ${resultInPercentage}%`}>
-            <Flex justify="center">
+            <Text align="center">
+                {difficulty.label} ({getIntervalLabel(difficulty.cents)})
+            </Text>
+            <Flex justify="center" pt="4">
                 <Button variant="surface" onClick={quit}>
                     Return
                 </Button>
