@@ -184,12 +184,12 @@ class Sound {
         })
 
         const ctx = new AudioContext()
-        const reverb = await this.createReverbNode(ctx)
+        const reverb = withReverb ? await this.createReverbNode(ctx) : null
         await this.warmUpAudioContext(ctx)
 
         const handleClosing = () => {
             const reverbDuration = reverb?.buffer?.duration
-            if (reverbDuration && withReverb) {
+            if (reverbDuration) {
                 setTimeout(
                     () => {
                         void ctx.close().finally(resolvePlay)
