@@ -6,7 +6,7 @@ import { ValuesProvider } from './components/LocalStorage'
 
 function App() {
     return (
-        <Theme appearance="dark" accentColor="blue">
+        <Theme appearance="dark" accentColor="blue" radius="large">
             <ValuesProvider>
                 <Container>
                     <Router>

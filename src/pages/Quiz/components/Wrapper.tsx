@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useContext } from 'react'
-import { Button, Flex, Heading } from '@radix-ui/themes'
+import { Button, Flex, Heading, Text } from '@radix-ui/themes'
 import { QuizContext } from '../context/QuizContext.ts'
 import { CheckIcon, Cross2Icon } from '@radix-ui/react-icons'
 
@@ -12,10 +12,14 @@ export const Wrapper = React.memo<Props>(({ children, title }) => {
     const headerIcon = (
         <>
             {state === 'right' && (
-                <CheckIcon color="green" width="40" height="40" />
+                <Text color="green">
+                    <CheckIcon width="40" height="40" />
+                </Text>
             )}
             {state === 'wrong' && (
-                <Cross2Icon color="red" width="40" height="40" />
+                <Text color="red">
+                    <Cross2Icon width="40" height="40" />
+                </Text>
             )}
         </>
     )
