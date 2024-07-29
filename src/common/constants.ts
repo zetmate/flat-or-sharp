@@ -1,4 +1,4 @@
-import { Difficulty, Note, QuizValue } from './types.ts'
+import { Difficulty, Note, QuizSettings, QuizValue } from './types.ts'
 
 export const MIN_OCTAVE = 3
 export const MAX_OCTAVE = 5
@@ -63,4 +63,9 @@ export const quizDefaultValue: QuizValue = {
     currentQuestionNum: 0,
     currentQuestion: null,
     correctAnswers: 0,
+}
+
+export const defaultQuizSettings: QuizSettings = {
+    cents: defaultDifficulty.cents,
+    dummyModeOn: false,
 }

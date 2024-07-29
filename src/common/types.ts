@@ -48,3 +48,8 @@ export interface QuizValue {
     currentQuestion: QuizQuestion | null
     correctAnswers: number
 }
+
+export interface QuizSettings {
+    dummyModeOn: boolean
+    cents: number
+}

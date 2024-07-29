@@ -1,8 +1,10 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { Button, Flex, Slider, Text, Switch } from '@radix-ui/themes'
 import { QuizContext } from './context/QuizContext.ts'
 import { Wrapper } from './components/Wrapper.tsx'
 import { defaultDifficulty } from '../../common/constants.ts'
+import { useValue } from '../../components/LocalStorage'
+import { lsValues } from '../../common/lsValues.ts'
 
 type Range = [number, number]
 const dummyRange: Range = [100, 700]
@@ -33,9 +35,12 @@ const getIntervalLabel = (cents: number) => {
 }
 
 export const NotStartedQuiz = React.memo(() => {
-    const [dummyModeOn, setDummyModeOn] = useState(false)
-    const [cents, setCents] = useState<number>(defaultDifficulty.cents)
     const { start } = useContext(QuizContext)
+    const {
+        value: { dummyModeOn, cents },
+        updateValue: updateSettings,
+    } = useValue(lsValues.quizSettings)
+
     const label = getDifficultyLabel(cents)
 
     const range = dummyModeOn ? dummyRange : normalRange
@@ -48,11 +53,15 @@ export const NotStartedQuiz = React.memo(() => {
                     checked={dummyModeOn}
                     onCheckedChange={(checked) => {
                         if (checked) {
-                            setDummyModeOn(true)
-                            setCents(defaultDummyCents)
+                            updateSettings({
+                                dummyModeOn: true,
+                                cents: defaultDummyCents,
+                            })
                         } else {
-                            setDummyModeOn(false)
-                            setCents(defaultDifficulty.cents)
+                            updateSettings({
+                                dummyModeOn: false,
+                                cents: defaultDifficulty.cents,
+                            })
                         }
                     }}
                 />
@@ -65,7 +74,7 @@ export const NotStartedQuiz = React.memo(() => {
                 min={range[0]}
                 max={range[1]}
                 value={[cents]}
-                onValueChange={(value) => setCents(value[0])}
+                onValueChange={(value) => updateSettings({ cents: value[0] })}
             />
             <Flex justify="center" pt="4">
                 <Button
