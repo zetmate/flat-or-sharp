@@ -11,7 +11,7 @@ const defaultDummyCents = 400
 
 const getDifficultyLabel = (cents: number) => {
     if (cents > 100) {
-        return 'Dummy'
+        return 'Beginner'
     }
     if (cents > 60) {
         return 'Easy'
@@ -43,9 +43,9 @@ export const NotStartedQuiz = React.memo(() => {
     return (
         <Wrapper title="Please select difficulty">
             <Flex gap="2" justify="center" pb="4">
-                <Text size="2">Enable dummy mode</Text>
+                <Text size="2">Enable beginner mode</Text>
                 <Switch
-                    defaultChecked={false}
+                    checked={dummyModeOn}
                     onCheckedChange={(checked) => {
                         if (checked) {
                             setDummyModeOn(true)
