@@ -214,7 +214,7 @@ class Sound {
     private async createReverbNode(ctx: AudioContext) {
         try {
             const impulseResponse = await fetch(
-                './src/audio/impulseResponses/mediumHall.wav'
+                './assets/impulseResponses/mediumHall.wav'
             )
             const arrayBuffer = await impulseResponse.arrayBuffer()
             const audioBuffer = await ctx.decodeAudioData(arrayBuffer)
