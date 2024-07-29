@@ -94,6 +94,7 @@ export const InProgressQuiz = React.memo(() => {
                 <Button
                     color={getButtonColor('flat')}
                     variant="outline"
+                    disabled={isPlaying}
                     onClick={() => onAnswerClick('flat')}
                 >
                     Flat
@@ -101,6 +102,7 @@ export const InProgressQuiz = React.memo(() => {
                 <Button
                     color={getButtonColor('sharp')}
                     variant="outline"
+                    disabled={isPlaying}
                     onClick={() => onAnswerClick('sharp')}
                 >
                     Sharp
