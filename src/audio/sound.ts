@@ -31,6 +31,7 @@ class Sound {
     private readonly baseOsc: OscType = 'sine'
     private readonly diffOsc: OscType = 'square'
     private fadeInLength = 0.1
+    private playDelay = 0.25
 
     async playTwoNotes({
         base,
@@ -40,7 +41,7 @@ class Sound {
     }: PlayTwoNotesOptions) {
         const { ctx, closeContext, playPromise } = await this.prepareForPlay(2)
 
-        const startTime = ctx.currentTime + 0.5
+        const startTime = ctx.currentTime + this.playDelay
         const baseHz = noteToHz(base)
         const diffHz = getDetunedHzFromNote(base, cents, flatOrSharp)
 
@@ -156,7 +157,23 @@ class Sound {
         }
     }
 
-    // TODO: this whole thing is kinda awful, rewrite to promise base for closing contexts
+    private warmUpAudioContext(ctx: AudioContext) {
+        let resolveWarmup = () => {}
+        const warmupPromise = new Promise<void>((resolve) => {
+            resolveWarmup = resolve
+        })
+
+        const buffer = ctx.createBuffer(1, 1, ctx.sampleRate)
+        const emptySource = ctx.createBufferSource()
+        emptySource.buffer = buffer
+        emptySource.connect(ctx.destination)
+        emptySource.start(0)
+        emptySource.stop(ctx.currentTime + 0.01)
+        emptySource.onended = resolveWarmup
+
+        return warmupPromise
+    }
+
     private async prepareForPlay(
         soundSourcesCount: number,
         withReverb?: boolean
@@ -168,7 +185,7 @@ class Sound {
 
         const ctx = new AudioContext()
         const reverb = await this.createReverbNode(ctx)
-        let counter = 1
+        await this.warmUpAudioContext(ctx)
 
         const handleClosing = () => {
             const reverbDuration = reverb?.buffer?.duration
@@ -184,12 +201,14 @@ class Sound {
             }
         }
 
-        // only close when both osc played
+        // TODO: this whole thing is kinda awful, rewrite to promise base for closing contexts
+        let sourcesCounter = 1
+        // only close when all sources played
         const closeContext = () => {
-            if (counter === soundSourcesCount) {
+            if (sourcesCounter === soundSourcesCount) {
                 handleClosing()
             } else {
-                counter++
+                sourcesCounter++
             }
         }
         return { ctx, closeContext, reverb, playPromise }
