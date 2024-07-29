@@ -14,6 +14,7 @@ const getEmoji = (resultInPercentage: number) => {
     if (resultInPercentage > 50) {
         return '👌'
     }
+    return ''
 }
 
 export const CompletedQuiz = React.memo(() => {
