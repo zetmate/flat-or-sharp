@@ -32,6 +32,7 @@ class Sound {
     private readonly diffOsc: OscType = 'square'
     private fadeInLength = 0.1
     private playDelay = 0.25
+    private closeDelay = 0.25
 
     async playTwoNotes({
         base,
@@ -188,17 +189,10 @@ class Sound {
         await this.warmUpAudioContext(ctx)
 
         const handleClosing = () => {
-            const reverbDuration = reverb?.buffer?.duration
-            if (reverbDuration) {
-                setTimeout(
-                    () => {
-                        void ctx.close().finally(resolvePlay)
-                    },
-                    reverbDuration * 1000 + 100
-                )
-            } else {
+            const tail = (reverb?.buffer?.duration || 0) + this.closeDelay
+            setTimeout(() => {
                 void ctx.close().finally(resolvePlay)
-            }
+            }, tail * 1000)
         }
 
         // TODO: this whole thing is kinda awful, rewrite to promise base for closing contexts
