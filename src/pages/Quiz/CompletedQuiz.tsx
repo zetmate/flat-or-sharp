@@ -9,8 +9,10 @@ export const CompletedQuiz = React.memo(() => {
         useContext(QuizContext)
     const resultInPercentage = (correctAnswers / questionsCount) * 100
 
+    const suffixEmoji = questionsCount === correctAnswers ? ' 🎉' : ''
+
     return (
-        <Wrapper title={`Your score is ${resultInPercentage}%`}>
+        <Wrapper title={`Your score is ${resultInPercentage}%${suffixEmoji}`}>
             <Text align="center">
                 {difficulty.label} ({getIntervalLabel(difficulty.cents)})
             </Text>
