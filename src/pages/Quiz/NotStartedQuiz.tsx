@@ -64,7 +64,7 @@ export const NotStartedQuiz = React.memo(() => {
                 {label}: ({getIntervalLabel(cents)})
             </Text>
             <Slider
-                step={dummyModeOn ? 100 : 10}
+                step={dummyModeOn ? 100 : 5}
                 min={range[0]}
                 max={range[1]}
                 value={[cents]}
